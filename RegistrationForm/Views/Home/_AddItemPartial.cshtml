@@ -1,0 +1,97 @@
+﻿@model DataAccessLayer.Models.UserInformation
+
+<script>
+    $(document).ready(function () {
+        $(".closebutton").click(function () {
+            $("#userModal").modal('hide');
+        });
+
+        $(document).on("change", "#StateId", function () {
+            var stateId = $(this).val();
+            if (stateId != "") {
+                $.get('@Url.Action("GetCities", "Home")', { stateId: stateId }, function (data) {
+                    var cityDropdown = $("#CityId");
+                    cityDropdown.empty();
+                    $.each(data, function (index, item) {
+                        cityDropdown.append(new Option(item.Text, item.Value));
+                    });
+                });
+            }
+            else {
+                var cityDropdown = $("#CityId");
+                cityDropdown.empty();
+                cityDropdown.append(new Option("Select City", ""));
+            }
+        });
+
+        $(document).ready(function () {
+            $("#agreeCheckbox").change(function () {
+                $("#savebutton").prop("disabled", !$(this).is(":checked"));
+            });
+        });
+
+    });
+</script>
+
+<div class="modal-header">
+    @{
+        if (Model.UserInformation_ID == 0)
+        {
+            <h5 class="modal-title">Add User Information</h5>
+        }
+        else
+        {
+            <h5 class="modal-title">Edit User Information</h5>
+        }
+    }
+    <button type="button" class="close closebutton" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+    <form id="userForm">
+        @Html.AntiForgeryToken()
+
+        @Html.HiddenFor(m => m.UserInformation_ID)
+        <div class="form-group">
+            @Html.LabelFor(m => m.Name)
+            @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(m => m.Email_Address)
+            @Html.TextBoxFor(m => m.Email_Address, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.Email_Address, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(m => m.Phone)
+            @Html.TextBoxFor(m => m.Phone, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.Phone, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(m => m.Address)
+            @Html.TextBoxFor(m => m.Address, new { @class = "form-control" })
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(m => m.State_ID)
+            @Html.DropDownListFor(m => m.State_ID, new SelectList(Model.States, "Value", "Text"), "Select State", new { @class = "form-control", id = "StateId" })
+            @Html.ValidationMessageFor(m => m.State_ID, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(m => m.City_ID)
+            @Html.DropDownListFor(m => m.City_ID, new SelectList(Model.Cities, "Value", "Text"), new { @class = "form-control", id = "CityId" })
+            @Html.ValidationMessageFor(m => m.City_ID, "", new { @class = "text-danger" })
+        </div>
+        <br/>
+        <div class="form-group">
+            @Html.CheckBoxFor(m => m.Agree, new { id = "agreeCheckbox" })
+            <label for="agreeCheckbox">Agree?</label>
+            @Html.ValidationMessageFor(m => m.Agree, "", new { @class = "text-danger" })
+        </div>
+        <br/>
+        <button type="submit" class="btn btn-primary" id="savebutton" disabled>Save</button>
+    </form>
+</div>
+
+
+@Scripts.Render("~/bundles/jqueryval")

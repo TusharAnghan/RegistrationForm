@@ -1,0 +1,155 @@
+﻿@model IEnumerable<DataAccessLayer.Models.UserInformation>
+
+@{
+    ViewBag.Title = "Admin Panel";
+}
+
+<div class="container mt-4">
+    <h2>Register User List</h2>
+    <br />
+    <button class="btn btn-primary" id="addUserButton">Add</button>
+
+    <br /><br />
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Name)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Email_Address)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Phone)
+                </th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+
+                    @Html.HiddenFor(modelItem => item.UserInformation_ID)
+
+                    @Html.HiddenFor(modelItem => item.State_ID)
+
+                    @Html.HiddenFor(modelItem => item.City_ID)
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Email_Address)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Phone)
+                    </td>
+                    <td>
+                        <button class="btn btn-warning editUserButton" data-id="@item.UserInformation_ID">Edit</button>
+                        |
+                        <button class="btn btn-danger deleteUserButton" data-id="@item.UserInformation_ID">Delete</button>
+                    </td>
+                </tr>
+            }
+
+        </tbody>
+    </table>
+
+    <div class="modal fade" id="userModal" tabindex="-1" role="dialog" aria-labelledby="userModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content" id="userModalContent">
+                <!-- Partial view content will load here -->
+            </div>
+        </div>
+    </div>
+
+    <div id="deleteModal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Delete Confirmation</h5>
+                    <button type="button" class="close closedeleteModal" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Partial View will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.bundle.min.js"></script>
+
+
+<script>
+    $(document).ready(function () {
+
+        $("#addUserButton").click(function () {
+            $.get('@Url.Action("AddOrEdit", "Home")', function (data) {
+                $("#userModalContent").html(data);
+                $("#userModal").modal("show");
+            });
+        });
+
+        // Load partial view into modal when Edit button is clicked
+        $(".editUserButton").click(function () {
+            var userId = $(this).data("id");
+            $.get('@Url.Action("AddOrEdit", "Home")', { id: userId }, function (data) {
+                $("#userModalContent").html(data);
+                $("#userModal").modal("show");
+            });
+        });
+
+        $(".deleteUserButton").click(function () {
+            var userId = $(this).data("id");
+            $.get('@Url.Action("DeleteConfirmation", "Home")', { id: userId }, function (data) {
+                $('#deleteModal .modal-body').html(data);
+                $('#deleteModal').modal('show');
+            });
+        });
+
+
+        $(document).on("submit", "#userForm", function (event) {
+            event.preventDefault(); // Prevent traditional form submission
+
+            $.ajax({
+                url: '@Url.Action("SaveUser", "Home")',
+                type: 'POST',
+                data: $(this).serialize(),
+                success: function (response) {
+                    if (response.success) {
+                        $("#userModal").modal("hide"); // Close modal on success
+                        location.reload(); // Reload page to update grid
+                    } else {
+                        alert(response.message);
+                    }
+                }
+            });
+        });
+
+        $(document).on('submit', '#deleteForm', function (e) {
+            e.preventDefault();
+            $.ajax({
+                url: $(this).attr('action'),
+                type: $(this).attr('method'),
+                data: $(this).serialize(),
+                success: function (response) {
+                    if (response.success) {
+                        $('#deleteModal').modal('hide');
+                        location.reload();
+                    } else {
+                        alert(response.message);
+                    }
+                },
+                error: function () {
+                    alert('An error occurred while deleting data.');
+                }
+            });
+        });
+
+    });
+</script>

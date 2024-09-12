@@ -1,0 +1,9 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs
+/BusinessLogic/obj/Debug
+/DataAccessLayer/obj/Debug
+/RegistrationForm/.vs/RegistrationForm
+/RegistrationForm/obj/Debug

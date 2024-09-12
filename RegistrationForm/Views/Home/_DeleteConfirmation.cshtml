@@ -1,0 +1,17 @@
+﻿@model DataAccessLayer.Models.UserInformation
+
+<script>
+    $(".closedeleteModal").click(function () {
+        $("#deleteModal").modal('hide');
+    });
+</script>
+
+<div>
+    <p>Are you sure you want to delete this item?</p>
+    <form id="deleteForm" action="@Url.Action("Delete", "Home")" method="post">
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.UserInformation_ID)
+        <button type="submit" class="btn btn-danger">Delete</button>
+        <button type="button" class="btn btn-secondary closedeleteModal" data-dismiss="modal">Cancel</button>
+    </form>
+</div>
