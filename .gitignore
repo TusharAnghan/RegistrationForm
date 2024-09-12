@@ -7,3 +7,6 @@
 /DataAccessLayer/obj/Debug
 /RegistrationForm/.vs/RegistrationForm
 /RegistrationForm/obj/Debug
+/BusinessLogic/obj/Release
+/DataAccessLayer/obj/Release
+/RegistrationForm/obj/Release
